@@ -17,7 +17,8 @@ the data file.
 We first check to see if we have a subdirectory named "data" and create it if
 we don't.
 
-```{r createDir, echo=TRUE}
+
+```r
 if (!file.exists("data")) {
         dir.create("data")
 }
@@ -26,7 +27,8 @@ if (!file.exists("data")) {
 Then if the data subdirectory doesn't contain the zip file, we download the zip
 file to the data directory and extract the data file.
 
-```{r downloadData, echo=TRUE}
+
+```r
 if (!file.exists("./data/activity.zip")) {
         
         url <- paste0("https://d396qusza40orc.cloudfront.net/",
@@ -46,7 +48,8 @@ if (!file.exists("./data/activity.zip")) {
 We load the data into a variable called <span class="code">activity</span> 
 using <span class="code">read.csv()</span>.
 
-```{r loadData, echo=TRUE}
+
+```r
 activity <- read.csv("./data/activity.csv", 
                      header=TRUE, 
                      sep=",")
@@ -58,7 +61,8 @@ Using the <span class="code">aggregate()</span> function, we apply the
 <span class="code">sum()</span> function to total the steps
 by date. This gives us the total number of steps taken per day.
 
-```{r stepsPerDay, echo=TRUE}
+
+```r
 stepsPerDay <- aggregate(steps ~ date, data=activity, sum)
 
 histActivity <- hist(stepsPerDay$steps, 
@@ -71,22 +75,25 @@ histActivity <- hist(stepsPerDay$steps,
                      ylim=range(0:20))
 ```
 
+![plot of chunk stepsPerDay](figure/stepsPerDay.png) 
+
 The mean and median steps per day are calculated simply by passing the 
 <span class="code">steps</span> attribute to the <span class="code">mean()</span>
 and <span class="code">median()</span> functions respectively.
 
-```{r dailyStats, echo=TRUE}
+
+```r
 dailyMean <- mean(stepsPerDay$steps)
 dailyMedian <- median(stepsPerDay$steps)
 ```
 
 <ul>
 <li>
-The mean steps per day is `r format(dailyMean, big.mark=",", scientific=FALSE)`.
+The mean steps per day is 10,766.
 </li>
 <li>
 The median steps per day is 
-`r format(dailyMedian, big.mark=",", scientific=FALSE)`.
+10,765.
 </li>
 </ul>  
 
@@ -98,17 +105,21 @@ To calculate the mean number of steps per 5-minute interval, we again use the
 called <span class="code">stepsMeanPerInterval</span>. We then use the result to
 create a time series plot.
 
-```{r stepsMeanPerInterval, echo=TRUE}
+
+```r
 stepsMeanPerInterval <- aggregate(steps ~ interval, data=activity, mean)
 
 plot(stepsMeanPerInterval, type="l")
 ```
 
+![plot of chunk stepsMeanPerInterval](figure/stepsMeanPerInterval.png) 
+
 To determine which interval has the maximum number of steps, we extract the row
 from <span class="code">stepsMeanPerInterval</span> that has the maximum steps 
 value, then we look at the interval of that row.
 
-```{r infoMax, echo=TRUE}
+
+```r
 infoMax <- stepsMeanPerInterval[which.max(stepsMeanPerInterval$steps), ]
 maxInterval <- infoMax$interval
 maxSteps <- infoMax$steps
@@ -116,7 +127,7 @@ maxSteps <- infoMax$steps
 
 <ul>
 <li>
-Interval `r maxInterval` contains the maximum number of steps (`r maxSteps`).
+Interval 835 contains the maximum number of steps (206.1698).
 </li>
 </ul>
   
@@ -127,21 +138,28 @@ Interval `r maxInterval` contains the maximum number of steps (`r maxSteps`).
 On visually inspecting the data, it looks like the only attribute missing data
 is <span class="code">steps</span>. We confirm this by checking each column for 
 <strong>NA</strong> values.
-```{r NAcheck, echo=TRUE}
+
+```r
 apply(activity, 2, function(x) any(is.na(x)))
+```
+
+```
+##    steps     date interval 
+##     TRUE    FALSE    FALSE
 ```
 
 Now that we are certain the only column that contains <strong>NA</strong> values
 is the first column (<span class="code">steps</span>), we count how many 
 <strong>NA</strong>s there are in that column.
 
-```{r NAcount, echo=TRUE}
+
+```r
 NAcount <- sum(is.na(activity[, 1]))
 ```
 
 <ul>
 <li>
-The total number of rows containing NAs is `r format(NAcount, big.mark=",")`.
+The total number of rows containing NAs is 2,304.
 </li>
 </ul>  
 
@@ -150,7 +168,8 @@ The total number of rows containing NAs is `r format(NAcount, big.mark=",")`.
 We want to fill in the missing values, but we also want to preserve the original
 dataset. We make a copy of the data.
 
-```{r copyData, echo=TRUE}
+
+```r
 activityNoNA <- activity
 ```
   
@@ -167,7 +186,8 @@ interval. Lastly, we replace the <strong>NA</strong> in the duplicate dataset
 with the mean value retrieved from 
 <span class="code">stepsMeanPerInterval</span>.
 
-```{r fillData, echo=TRUE}
+
+```r
 # loop over duplicate dataset and replace NAs with
 # mean for the corresponding interval
 for (i in 1:nrow(activityNoNA)) {
@@ -192,7 +212,8 @@ for (i in 1:nrow(activityNoNA)) {
 As we did previously, we use <span class="code">aggregate()</span> to calculate 
 the total steps per day for the new dataset.
 
-```{r stepsPerDayNoNA, echo=TRUE}
+
+```r
 stepsPerDayNoNA <- aggregate(steps ~ date, data=activityNoNA, sum)
 
 histActivityNoNA <- hist(stepsPerDayNoNA$steps, 
@@ -205,9 +226,12 @@ histActivityNoNA <- hist(stepsPerDayNoNA$steps,
                          ylim=range(0:25))
 ```
 
+![plot of chunk stepsPerDayNoNA](figure/stepsPerDayNoNA.png) 
+
 The mean and median steps per day are calculated similarly as before.
 
-```{r dailyStatsNoNA, echo=TRUE}
+
+```r
 dailyMeanNoNA <- mean(stepsPerDayNoNA$steps)
 dailyMedianNoNA <- median(stepsPerDayNoNA$steps)
 ```
@@ -215,11 +239,11 @@ dailyMedianNoNA <- median(stepsPerDayNoNA$steps)
 <ul>
 <li>
 The mean steps per day is
-`r format(dailyMeanNoNA, big.mark=",", scientific=FALSE)`.
+10,766.
 </li>
 <li>
 The median steps per day is 
-`r format(dailyMedianNoNA, big.mark=",", scientific=FALSE)`.  
+10,766.  
 </li>
 </ul>  
 
@@ -235,11 +259,39 @@ objects reveals the value for this bin in the original dataset is 16 while the
 value for the dataset with imputed values is 24 (a 50% increase). All other bins
 are identical.
 
-```{r binCompare, echo=TRUE}
+
+```r
 histActivity$breaks
+```
+
+```
+##  [1]     0  2000  4000  6000  8000 10000 12000 14000 16000 18000 20000
+## [12] 22000
+```
+
+```r
 histActivityNoNA$breaks
+```
+
+```
+##  [1]     0  2000  4000  6000  8000 10000 12000 14000 16000 18000 20000
+## [12] 22000
+```
+
+```r
 histActivity$counts
+```
+
+```
+##  [1]  2  2  3  3  7 16 10  7  1  0  2
+```
+
+```r
 histActivityNoNA$counts
+```
+
+```
+##  [1]  2  2  3  3  7 24 10  7  1  0  2
 ```
   
 <br />
@@ -254,7 +306,8 @@ for a specific date. The function takes a date as an argument and checks the
 name of the day of the week. If the day name is "Saturday" or "Sunday",
 "weekend" is returned. Otherwise, "weekday" is returned.
 
-```{r dayTypeFn, echo=TRUE}
+
+```r
 DayType <- function(x) {
         
         switch(weekdays(x),
@@ -269,7 +322,8 @@ duplicate dataset and determine if each date is a weekday or weekend. As each
 day type is determined, it is added to the vector. When complete, the vector is
 added to the dataset as a factor.
 
-```{r dayType, echo=TRUE}
+
+```r
 dayType <- c()
 
 for (i in 1:nrow(activityNoNA)) {
@@ -286,7 +340,8 @@ we want to plot to variables to make the code more human readable and build the
 plot using <span class="code">xyplot()</span> from the
 <span class="code">lattice package</span>.
 
-```{r panelPlot, echo=TRUE}
+
+```r
 stepsMeanPerIntervalPerDayType <- aggregate(steps ~ interval + dayType, 
                                             data=activityNoNA, mean)
 
@@ -301,4 +356,6 @@ xyplot(steps ~ interval | dayType,
        xlab="Interval",
        ylab="Number of Steps")
 ```
+
+![plot of chunk panelPlot](figure/panelPlot.png) 
 
