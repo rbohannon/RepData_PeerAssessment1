@@ -1,8 +1,3 @@
-<style type="text/css">
-.code {font-family: Consolas, Monaco, Courier New;}
-li {font-weight: bold;}
-</style>
-
 # Reproducible Research: Peer Assessment 1
 
 ## Loading and Preprocessing the Data
