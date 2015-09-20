@@ -6,44 +6,7 @@ li {font-weight: bold;}
 # Reproducible Research: Peer Assessment 1
 
 ## Loading and Preprocessing the Data
-  
-<br />
-### Acquiring the Data
-The GitHub repository that was cloned for this assignment included the data 
-file, so it was not necessary to download it separately. However, for
-completeness I chose to include code to download the zipped archive and extract
-the data file.  
-  
-We first check to see if we have a subdirectory named "data" and create it if
-we don't.
 
-
-```r
-if (!file.exists("data")) {
-        dir.create("data")
-}
-```
-
-Then if the data subdirectory doesn't contain the zip file, we download the zip
-file to the data directory and extract the data file.
-
-
-```r
-if (!file.exists("./data/activity.zip")) {
-        
-        url <- paste0("https://d396qusza40orc.cloudfront.net/",
-                      "repdata%2Fdata%2Factivity.zip")
-        
-        download.file(url,
-                      "./data/activity.zip", 
-                      "curl", 
-                      T)
-        
-        unzip("./data/activity.zip", exdir="./data")
-}
-```
-  
-<br />
 ### Loading the Data
 We load the data into a variable called <span class="code">activity</span> 
 using <span class="code">read.csv()</span>.
@@ -56,7 +19,8 @@ activity <- read.csv("./data/activity.csv",
 ```
   
 <br /><br />
-## What is mean total number of steps taken per day?
+
+## What is mean total number of steps taken per day?  
 Using the <span class="code">aggregate()</span> function, we apply the 
 <span class="code">sum()</span> function to total the steps
 by date. This gives us the total number of steps taken per day.
@@ -99,7 +63,7 @@ The median steps per day is
 
 <br />
 
-## What is the average daily activity pattern?
+## What is the average daily activity pattern?  
 To calculate the mean number of steps per 5-minute interval, we again use the
 <span class="code">aggregate()</span> function and store the result in a variable
 called <span class="code">stepsMeanPerInterval</span>. We then use the result to
@@ -109,7 +73,11 @@ create a time series plot.
 ```r
 stepsMeanPerInterval <- aggregate(steps ~ interval, data=activity, mean)
 
-plot(stepsMeanPerInterval, type="l")
+plot(stepsMeanPerInterval,
+     type="l",
+     main="Mean Steps Per Interval",
+     xlab="Interval",
+     ylab="Mean Number of Steps")
 ```
 
 ![plot of chunk stepsMeanPerInterval](figure/stepsMeanPerInterval.png) 
@@ -133,7 +101,7 @@ Interval 835 contains the maximum number of steps (206.1698).
   
 <br />
 
-## Imputing missing values
+## Imputing missing values  
 
 On visually inspecting the data, it looks like the only attribute missing data
 is <span class="code">steps</span>. We confirm this by checking each column for 
@@ -251,7 +219,7 @@ The median steps per day is
 
 ### Impact of Imputing Missing Data
 The means for each dataset are identical, and the medians are different only by
-1. So there is a little to no impact in these statictics.  
+1. So there is little to no impact in these statictics.  
 
 The two histograms for the datasets look very similar, but there appears to be
 a difference in the 10,000 to 12,000 bin. An examination of the two histogram
@@ -351,10 +319,11 @@ dayType <- stepsMeanPerIntervalPerDayType$dayType
 
 library(lattice)
 xyplot(steps ~ interval | dayType, 
-       layout=c(1, 2), 
+       layout=c(1, 2),
        type="l",
+       main="Mean Steps Per Interval by Day Type",
        xlab="Interval",
-       ylab="Number of Steps")
+       ylab="Mean Number of Steps")
 ```
 
 ![plot of chunk panelPlot](figure/panelPlot.png) 
