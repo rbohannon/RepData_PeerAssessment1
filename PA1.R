@@ -10,24 +10,6 @@ DayType <- function(x) {
 
 # *****************************************************************************
 
-
-if (!file.exists("data")) {
-        dir.create("data")
-}
-
-if (!file.exists("./data/activity.zip")) {
-        
-        url <- paste0("https://d396qusza40orc.cloudfront.net/",
-                      "repdata%2Fdata%2Factivity.zip")
-        
-        download.file(url,
-                      "./data/activity.zip", 
-                      "curl", 
-                      T)
-        
-        unzip("./data/activity.zip", exdir="./data")
-}
-
 # load data
 activity <- read.csv("./data/activity.csv", 
                      header=TRUE, 
@@ -140,7 +122,8 @@ steps <- stepsMeanPerIntervalPerDayType$steps
 interval <- stepsMeanPerIntervalPerDayType$interval
 dayType <- stepsMeanPerIntervalPerDayType$dayType
 
-xyplot(steps ~ interval | dayType, 
+library(lattice)
+xyplot(steps ~ interval | dayType,
        layout=c(1, 2), 
        type="l",
        xlab="Interval",
